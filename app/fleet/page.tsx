@@ -8,19 +8,8 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  Truck,
-  MapPin,
-  Fuel,
-  Wrench,
-  Clock,
-  AlertTriangle,
-  Search,
-  Plus,
-  Navigation,
-  Battery,
-  Thermometer,
-} from "lucide-react"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Truck, MapPin, Fuel, Wrench, Clock, AlertTriangle, Search, Plus, Navigation, Battery, Thermometer, Menu } from 'lucide-react'
 
 interface Vehicle {
   id: string
@@ -47,6 +36,14 @@ export default function FleetPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  const navigationItems = [
+    { href: "/dashboard", label: "Dashboard", active: false },
+    { href: "/tracking", label: "Tracking", active: false },
+    { href: "/fleet", label: "Fleet", active: true },
+    { href: "/routes", label: "Routes", active: false },
+  ]
 
   useEffect(() => {
     // Load vehicles from localStorage
@@ -193,52 +190,87 @@ export default function FleetPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
       {/* Navigation */}
       <nav className="bg-white/10 backdrop-blur-md border-b border-white/20">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
               <Truck className="h-8 w-8 text-blue-400" />
               <span className="text-2xl font-bold text-white">LogiFlow</span>
             </Link>
-            <div className="hidden md:flex items-center space-x-6 ml-8">
-              <Link href="/dashboard" className="text-white/80 hover:text-white transition-colors">
-                Dashboard
-              </Link>
-              <Link href="/tracking" className="text-white/80 hover:text-white transition-colors">
-                Tracking
-              </Link>
-              <Link href="/fleet" className="text-blue-400 font-medium">
-                Fleet
-              </Link>
-              <Link href="/routes" className="text-white/80 hover:text-white transition-colors">
-                Routes
-              </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-6">
+              {navigationItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={item.active ? "text-blue-400 font-medium" : "text-white/80 hover:text-white transition-colors"}
+                >
+                  {item.label}
+                </Link>
+              ))}
             </div>
+
+            {/* Mobile Menu Button */}
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden text-white">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="bg-slate-900 border-slate-700 w-[300px] sm:w-[400px]">
+                <div className="flex flex-col h-full">
+                  {/* Mobile Menu Header */}
+                  <div className="flex items-center justify-between pb-6 border-b border-slate-700">
+                    <div className="flex items-center space-x-2">
+                      <Truck className="h-6 w-6 text-blue-400" />
+                      <span className="text-xl font-bold text-white">LogiFlow</span>
+                    </div>
+                  </div>
+
+                  {/* Mobile Navigation Links */}
+                  <div className="flex flex-col space-y-4 py-6">
+                    {navigationItems.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`text-lg py-2 transition-colors ${item.active ? "text-blue-400 font-medium" : "text-white/80 hover:text-white"
+                          }`}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 lg:py-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 lg:mb-8 space-y-4 sm:space-y-0">
           <div>
-            <h1 className="text-4xl font-bold text-white mb-2">Fleet Management</h1>
-            <p className="text-white/70">Monitor and manage your vehicle fleet with comprehensive tracking</p>
+            <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">Fleet Management</h1>
+            <p className="text-white/70 text-sm lg:text-base">Monitor and manage your vehicle fleet with comprehensive tracking</p>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             Add Vehicle
           </Button>
         </div>
 
         {/* Fleet Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
           <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-white/80">Total Vehicles</CardTitle>
               <Truck className="h-4 w-4 text-blue-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{vehicles.length}</div>
+              <div className="text-xl lg:text-2xl font-bold text-white">{vehicles.length}</div>
               <p className="text-xs text-green-400">All vehicles tracked</p>
             </CardContent>
           </Card>
@@ -249,7 +281,7 @@ export default function FleetPage() {
               <Navigation className="h-4 w-4 text-green-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-xl lg:text-2xl font-bold text-white">
                 {vehicles.filter((v) => v.status === "active").length}
               </div>
               <p className="text-xs text-green-400">Currently on route</p>
@@ -262,7 +294,7 @@ export default function FleetPage() {
               <Wrench className="h-4 w-4 text-orange-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-xl lg:text-2xl font-bold text-white">
                 {vehicles.filter((v) => v.status === "maintenance").length}
               </div>
               <p className="text-xs text-orange-400">In service</p>
@@ -275,7 +307,7 @@ export default function FleetPage() {
               <Fuel className="h-4 w-4 text-blue-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-xl lg:text-2xl font-bold text-white">
                 {Math.round(vehicles.reduce((acc, v) => acc + v.fuelLevel, 0) / vehicles.length)}%
               </div>
               <p className="text-xs text-blue-400">Fleet average</p>
@@ -284,7 +316,7 @@ export default function FleetPage() {
         </div>
 
         {/* Filters and Search */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <div className="flex flex-col lg:flex-row gap-4 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 h-4 w-4" />
             <Input
@@ -294,7 +326,7 @@ export default function FleetPage() {
               className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50"
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               variant={statusFilter === "all" ? "default" : "outline"}
               onClick={() => setStatusFilter("all")}
@@ -343,7 +375,7 @@ export default function FleetPage() {
         </div>
 
         {/* Vehicle Grid */}
-        <div className="grid gap-6">
+        <div className="grid gap-4 lg:gap-6">
           {filteredVehicles.map((vehicle) => {
             const maintenanceStatus = getMaintenanceStatus(vehicle.nextMaintenance)
             return (
@@ -352,7 +384,7 @@ export default function FleetPage() {
                 className="bg-white/10 border-white/20 backdrop-blur-sm hover:bg-white/15 transition-all duration-300"
               >
                 <CardHeader>
-                  <div className="flex justify-between items-start">
+                  <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start space-y-4 lg:space-y-0">
                     <div className="flex items-center space-x-4">
                       <div className="relative">
                         <img
@@ -365,9 +397,9 @@ export default function FleetPage() {
                         ></div>
                       </div>
                       <div>
-                        <CardTitle className="text-white flex items-center space-x-2">
+                        <CardTitle className="text-white flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                           <span>{vehicle.id}</span>
-                          <Badge variant="outline" className={`${getStatusColor(vehicle.status)} text-white border-0`}>
+                          <Badge variant="outline" className={`${getStatusColor(vehicle.status)} text-white border-0 w-fit`}>
                             {getStatusIcon(vehicle.status)}
                             <span className="ml-1">{vehicle.status}</span>
                           </Badge>
@@ -378,9 +410,9 @@ export default function FleetPage() {
                         <p className="text-sm text-white/60 mt-1">Driver: {vehicle.driver}</p>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-left lg:text-right">
                       <p className="text-sm text-white/70">Current Location</p>
-                      <p className="text-white font-medium flex items-center">
+                      <p className="text-white font-medium flex items-center lg:justify-end">
                         <MapPin className="h-4 w-4 mr-1" />
                         {vehicle.currentLocation}
                       </p>
@@ -390,29 +422,29 @@ export default function FleetPage() {
                 </CardHeader>
                 <CardContent>
                   <Tabs defaultValue="status" className="w-full">
-                    <TabsList className="bg-white/10 border-white/20 mb-4">
+                    <TabsList className="bg-white/10 border-white/20 mb-4 w-full">
                       <TabsTrigger
                         value="status"
-                        className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-400"
+                        className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-400 flex-1"
                       >
                         Status
                       </TabsTrigger>
                       <TabsTrigger
                         value="maintenance"
-                        className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-400"
+                        className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-400 flex-1"
                       >
                         Maintenance
                       </TabsTrigger>
                       <TabsTrigger
                         value="route"
-                        className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-400"
+                        className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-400 flex-1"
                       >
                         Route
                       </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="status" className="space-y-4">
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                         <div className="space-y-2">
                           <div className="flex items-center justify-between text-sm">
                             <span className="text-white/80 flex items-center">
@@ -451,18 +483,18 @@ export default function FleetPage() {
                     </TabsContent>
 
                     <TabsContent value="maintenance" className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         <div>
                           <p className="text-sm text-white/80">Last Maintenance</p>
                           <p className="text-white">{vehicle.lastMaintenance}</p>
                         </div>
                         <div>
                           <p className="text-sm text-white/80">Next Maintenance</p>
-                          <div className="flex items-center space-x-2">
+                          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                             <p className="text-white">{vehicle.nextMaintenance}</p>
                             <Badge
                               variant="outline"
-                              className={`${maintenanceStatus.color} text-white border-0 text-xs`}
+                              className={`${maintenanceStatus.color} text-white border-0 text-xs w-fit`}
                             >
                               {maintenanceStatus.text}
                             </Badge>
@@ -471,8 +503,8 @@ export default function FleetPage() {
                       </div>
                       {maintenanceStatus.status !== "ok" && (
                         <div className="bg-orange-500/20 border border-orange-500/30 rounded-lg p-3">
-                          <div className="flex items-center space-x-2">
-                            <AlertTriangle className="h-4 w-4 text-orange-400" />
+                          <div className="flex items-start space-x-2">
+                            <AlertTriangle className="h-4 w-4 text-orange-400 mt-0.5 flex-shrink-0" />
                             <p className="text-orange-400 text-sm">
                               {maintenanceStatus.status === "overdue"
                                 ? "Maintenance is overdue. Schedule service immediately."

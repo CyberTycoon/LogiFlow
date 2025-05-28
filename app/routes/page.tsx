@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
   Dialog,
   DialogContent,
@@ -16,19 +17,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {
-  Truck,
-  MapPin,
-  Navigation,
-  Clock,
-  Route,
-  Plus,
-  Search,
-  Zap,
-  TrendingDown,
-  Calendar,
-  AlertCircle,
-} from "lucide-react"
+import { Truck, MapPin, Navigation, Clock, Route, Plus, Search, Zap, TrendingDown, Calendar, AlertCircle, Menu } from 'lucide-react'
 
 interface RouteData {
   id: string
@@ -52,6 +41,7 @@ export default function RoutesPage() {
   const [routes, setRoutes] = useState<RouteData[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [newRoute, setNewRoute] = useState({
     name: "",
     origin: "",
@@ -59,6 +49,13 @@ export default function RoutesPage() {
     waypoints: "",
     vehicle: "",
   })
+
+  const navigationItems = [
+    { href: "/dashboard", label: "Dashboard", active: false },
+    { href: "/tracking", label: "Tracking", active: false },
+    { href: "/fleet", label: "Fleet", active: false },
+    { href: "/routes", label: "Routes", active: true },
+  ]
 
   useEffect(() => {
     // Load routes from localStorage
@@ -215,45 +212,80 @@ export default function RoutesPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
       {/* Navigation */}
       <nav className="bg-white/10 backdrop-blur-md border-b border-white/20">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
               <Truck className="h-8 w-8 text-blue-400" />
               <span className="text-2xl font-bold text-white">LogiFlow</span>
             </Link>
-            <div className="hidden md:flex items-center space-x-6 ml-8">
-              <Link href="/dashboard" className="text-white/80 hover:text-white transition-colors">
-                Dashboard
-              </Link>
-              <Link href="/tracking" className="text-white/80 hover:text-white transition-colors">
-                Tracking
-              </Link>
-              <Link href="/fleet" className="text-white/80 hover:text-white transition-colors">
-                Fleet
-              </Link>
-              <Link href="/routes" className="text-blue-400 font-medium">
-                Routes
-              </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-6">
+              {navigationItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={item.active ? "text-blue-400 font-medium" : "text-white/80 hover:text-white transition-colors"}
+                >
+                  {item.label}
+                </Link>
+              ))}
             </div>
+
+            {/* Mobile Menu Button */}
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden text-white">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="bg-slate-900 border-slate-700 w-[300px] sm:w-[400px]">
+                <div className="flex flex-col h-full">
+                  {/* Mobile Menu Header */}
+                  <div className="flex items-center justify-between pb-6 border-b border-slate-700">
+                    <div className="flex items-center space-x-2">
+                      <Truck className="h-6 w-6 text-blue-400" />
+                      <span className="text-xl font-bold text-white">LogiFlow</span>
+                    </div>
+                  </div>
+
+                  {/* Mobile Navigation Links */}
+                  <div className="flex flex-col space-y-4 py-6">
+                    {navigationItems.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`text-lg py-2 transition-colors ${item.active ? "text-blue-400 font-medium" : "text-white/80 hover:text-white"
+                          }`}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 lg:py-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 lg:mb-8 space-y-4 sm:space-y-0">
           <div>
-            <h1 className="text-4xl font-bold text-white mb-2">Route Planning</h1>
-            <p className="text-white/70">Optimize your delivery routes with AI-powered planning</p>
+            <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">Route Planning</h1>
+            <p className="text-white/70 text-sm lg:text-base">Optimize your delivery routes with AI-powered planning</p>
           </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto">
                 <Plus className="mr-2 h-4 w-4" />
                 Plan New Route
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-slate-800 border-slate-700">
+            <DialogContent className="bg-slate-800 border-slate-700 mx-4 max-w-md">
               <DialogHeader>
                 <DialogTitle className="text-white">Plan New Route</DialogTitle>
                 <DialogDescription className="text-white/70">
@@ -340,14 +372,14 @@ export default function RoutesPage() {
         </div>
 
         {/* Route Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
           <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-white/80">Total Routes</CardTitle>
               <Route className="h-4 w-4 text-blue-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{routes.length}</div>
+              <div className="text-xl lg:text-2xl font-bold text-white">{routes.length}</div>
               <p className="text-xs text-green-400">All planned routes</p>
             </CardContent>
           </Card>
@@ -358,7 +390,7 @@ export default function RoutesPage() {
               <MapPin className="h-4 w-4 text-blue-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{totalDistance.toLocaleString()} km</div>
+              <div className="text-xl lg:text-2xl font-bold text-white">{totalDistance.toLocaleString()} km</div>
               <p className="text-xs text-blue-400">Across all routes</p>
             </CardContent>
           </Card>
@@ -369,7 +401,7 @@ export default function RoutesPage() {
               <TrendingDown className="h-4 w-4 text-green-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">${totalFuelCost.toLocaleString()}</div>
+              <div className="text-xl lg:text-2xl font-bold text-white">${totalFuelCost.toLocaleString()}</div>
               <p className="text-xs text-green-400">15% savings vs manual</p>
             </CardContent>
           </Card>
@@ -380,7 +412,7 @@ export default function RoutesPage() {
               <Zap className="h-4 w-4 text-yellow-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{Math.round(avgOptimization)}%</div>
+              <div className="text-xl lg:text-2xl font-bold text-white">{Math.round(avgOptimization)}%</div>
               <p className="text-xs text-yellow-400">AI optimization score</p>
             </CardContent>
           </Card>
@@ -400,15 +432,15 @@ export default function RoutesPage() {
         </div>
 
         {/* Routes Grid */}
-        <div className="grid gap-6">
+        <div className="grid gap-4 lg:gap-6">
           {filteredRoutes.map((route) => (
             <Card
               key={route.id}
               className="bg-white/10 border-white/20 backdrop-blur-sm hover:bg-white/15 transition-all duration-300"
             >
               <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div className="flex items-center space-x-4">
+                <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start space-y-4 lg:space-y-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
                     <div className="relative">
                       <img
                         src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
@@ -419,10 +451,10 @@ export default function RoutesPage() {
                         className={`absolute -top-1 -right-1 w-4 h-4 rounded-full ${getStatusColor(route.status)}`}
                       ></div>
                     </div>
-                    <div>
-                      <CardTitle className="text-white flex items-center space-x-2">
+                    <div className="flex-1">
+                      <CardTitle className="text-white flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                         <span>{route.name}</span>
-                        <Badge variant="outline" className={`${getStatusColor(route.status)} text-white border-0`}>
+                        <Badge variant="outline" className={`${getStatusColor(route.status)} text-white border-0 w-fit`}>
                           {getStatusIcon(route.status)}
                           <span className="ml-1">{route.status}</span>
                         </Badge>
@@ -435,7 +467,7 @@ export default function RoutesPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-left lg:text-right">
                     <p className="text-sm text-white/70">Optimization Score</p>
                     <p className={`text-2xl font-bold ${getOptimizationColor(route.optimizationScore)}`}>
                       {route.optimizationScore}%
@@ -444,7 +476,7 @@ export default function RoutesPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                   <div>
                     <p className="text-sm text-white/70 flex items-center">
                       <MapPin className="h-4 w-4 mr-1" />
@@ -471,7 +503,7 @@ export default function RoutesPage() {
 
                 {route.assignedVehicle && (
                   <div className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-3 mb-4">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
                       <div className="flex items-center space-x-2">
                         <Truck className="h-4 w-4 text-blue-400" />
                         <span className="text-blue-400 text-sm">
@@ -487,8 +519,8 @@ export default function RoutesPage() {
                   </div>
                 )}
 
-                <div className="flex justify-between items-center">
-                  <div className="flex space-x-2">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-3 sm:space-y-0">
+                  <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                     <Button
                       variant="outline"
                       size="sm"
@@ -507,7 +539,7 @@ export default function RoutesPage() {
                       </Button>
                     )}
                   </div>
-                  <Button variant="ghost" size="sm" className="text-blue-400 hover:text-blue-300">
+                  <Button variant="ghost" size="sm" className="text-blue-400 hover:text-blue-300 w-full sm:w-auto">
                     <Zap className="h-4 w-4 mr-1" />
                     Re-optimize
                   </Button>

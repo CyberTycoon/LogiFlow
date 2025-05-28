@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
   Dialog,
   DialogContent,
@@ -16,7 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Truck, Package, Search, Plus, Clock, CheckCircle, AlertTriangle, Navigation, Phone, Mail } from "lucide-react"
+import { Truck, Package, Search, Plus, Clock, CheckCircle, AlertTriangle, Navigation, Phone, Mail, Menu } from 'lucide-react'
 
 interface Shipment {
   id: string
@@ -45,6 +46,7 @@ export default function TrackingPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedShipment, setSelectedShipment] = useState<Shipment | null>(null)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [newShipment, setNewShipment] = useState({
     origin: "",
     destination: "",
@@ -52,6 +54,13 @@ export default function TrackingPage() {
     dimensions: "",
     specialInstructions: "",
   })
+
+  const navigationItems = [
+    { href: "/dashboard", label: "Dashboard", active: false },
+    { href: "/tracking", label: "Tracking", active: true },
+    { href: "/fleet", label: "Fleet", active: false },
+    { href: "/routes", label: "Routes", active: false },
+  ]
 
   useEffect(() => {
     // Load shipments from localStorage
@@ -215,45 +224,80 @@ export default function TrackingPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
       {/* Navigation */}
       <nav className="bg-white/10 backdrop-blur-md border-b border-white/20">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
               <Truck className="h-8 w-8 text-blue-400" />
               <span className="text-2xl font-bold text-white">LogiFlow</span>
             </Link>
-            <div className="hidden md:flex items-center space-x-6 ml-8">
-              <Link href="/dashboard" className="text-white/80 hover:text-white transition-colors">
-                Dashboard
-              </Link>
-              <Link href="/tracking" className="text-blue-400 font-medium">
-                Tracking
-              </Link>
-              <Link href="/fleet" className="text-white/80 hover:text-white transition-colors">
-                Fleet
-              </Link>
-              <Link href="/routes" className="text-white/80 hover:text-white transition-colors">
-                Routes
-              </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-6">
+              {navigationItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={item.active ? "text-blue-400 font-medium" : "text-white/80 hover:text-white transition-colors"}
+                >
+                  {item.label}
+                </Link>
+              ))}
             </div>
+
+            {/* Mobile Menu Button */}
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden text-white">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="bg-slate-900 border-slate-700 w-[300px] sm:w-[400px]">
+                <div className="flex flex-col h-full">
+                  {/* Mobile Menu Header */}
+                  <div className="flex items-center justify-between pb-6 border-b border-slate-700">
+                    <div className="flex items-center space-x-2">
+                      <Truck className="h-6 w-6 text-blue-400" />
+                      <span className="text-xl font-bold text-white">LogiFlow</span>
+                    </div>
+                  </div>
+
+                  {/* Mobile Navigation Links */}
+                  <div className="flex flex-col space-y-4 py-6">
+                    {navigationItems.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`text-lg py-2 transition-colors ${item.active ? "text-blue-400 font-medium" : "text-white/80 hover:text-white"
+                          }`}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 lg:py-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 lg:mb-8 space-y-4 sm:space-y-0">
           <div>
-            <h1 className="text-4xl font-bold text-white mb-2">Shipment Tracking</h1>
-            <p className="text-white/70">Track and manage all your shipments with automated status updates</p>
+            <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">Shipment Tracking</h1>
+            <p className="text-white/70 text-sm lg:text-base">Track and manage all your shipments with automated status updates</p>
           </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700">
+              <Button className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
                 <Plus className="mr-2 h-4 w-4" />
                 New Shipment
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-slate-800 border-slate-700">
+            <DialogContent className="bg-slate-800 border-slate-700 mx-4 max-w-md">
               <DialogHeader>
                 <DialogTitle className="text-white">Create New Shipment</DialogTitle>
                 <DialogDescription className="text-white/70">Enter the details for your new shipment</DialogDescription>
@@ -344,7 +388,7 @@ export default function TrackingPage() {
         </div>
 
         {/* Shipments List */}
-        <div className="grid gap-6">
+        <div className="grid gap-4 lg:gap-6">
           {filteredShipments.map((shipment) => (
             <Card
               key={shipment.id}
@@ -352,27 +396,27 @@ export default function TrackingPage() {
               onClick={() => setSelectedShipment(shipment)}
             >
               <CardHeader>
-                <div className="flex justify-between items-start">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-2 sm:space-y-0">
                   <div>
-                    <CardTitle className="text-white flex items-center space-x-2">
+                    <CardTitle className="text-white flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                       <span>{shipment.trackingNumber}</span>
-                      <Badge variant="outline" className={`${getStatusColor(shipment.status)} text-white border-0`}>
+                      <Badge variant="outline" className={`${getStatusColor(shipment.status)} text-white border-0 w-fit`}>
                         {getStatusIcon(shipment.status)}
                         <span className="ml-1">{shipment.status}</span>
                       </Badge>
                     </CardTitle>
-                    <CardDescription className="text-white/70">
+                    <CardDescription className="text-white/70 text-sm lg:text-base">
                       {shipment.origin} → {shipment.destination}
                     </CardDescription>
                   </div>
-                  <div className="text-right">
+                  <div className="text-left sm:text-right">
                     <p className="text-sm text-white/70">Est. Delivery</p>
                     <p className="text-white font-medium">{shipment.estimatedDelivery}</p>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <p className="text-sm text-white/70">Driver</p>
                     <p className="text-white">{shipment.driver}</p>
@@ -394,7 +438,7 @@ export default function TrackingPage() {
         {/* Shipment Details Dialog */}
         {selectedShipment && (
           <Dialog open={!!selectedShipment} onOpenChange={() => setSelectedShipment(null)}>
-            <DialogContent className="bg-slate-800 border-slate-700 max-w-2xl">
+            <DialogContent className="bg-slate-800 border-slate-700 mx-4 max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-white flex items-center space-x-2">
                   <Package className="h-5 w-5" />
@@ -404,14 +448,14 @@ export default function TrackingPage() {
               </DialogHeader>
 
               <Tabs defaultValue="details" className="w-full">
-                <TabsList className="bg-slate-700">
-                  <TabsTrigger value="details">Details</TabsTrigger>
-                  <TabsTrigger value="timeline">Timeline</TabsTrigger>
-                  <TabsTrigger value="contact">Contact</TabsTrigger>
+                <TabsList className="bg-slate-700 w-full">
+                  <TabsTrigger value="details" className="flex-1">Details</TabsTrigger>
+                  <TabsTrigger value="timeline" className="flex-1">Timeline</TabsTrigger>
+                  <TabsTrigger value="contact" className="flex-1">Contact</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="details" className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <p className="text-sm text-white/70">Origin</p>
                       <p className="text-white">{selectedShipment.origin}</p>
@@ -455,10 +499,10 @@ export default function TrackingPage() {
                   <div className="space-y-4">
                     {selectedShipment.timeline.map((event, index) => (
                       <div key={index} className="flex items-start space-x-4">
-                        <div className={`p-2 rounded-full ${getStatusColor(event.status)} mt-1`}>
+                        <div className={`p-2 rounded-full ${getStatusColor(event.status)} mt-1 flex-shrink-0`}>
                           {getStatusIcon(event.status)}
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <p className="text-white font-medium">{event.description}</p>
                           <p className="text-sm text-white/70">{event.location}</p>
                           <p className="text-xs text-white/50">{new Date(event.timestamp).toLocaleString()}</p>
@@ -474,17 +518,17 @@ export default function TrackingPage() {
                       <p className="text-sm text-white/70">Driver</p>
                       <p className="text-white font-medium">{selectedShipment.driver}</p>
                     </div>
-                    <div className="flex items-center space-x-4">
+                    <div className="flex flex-col sm:flex-row gap-4">
                       <Button
                         variant="outline"
-                        className="border-blue-400 text-blue-400 hover:bg-blue-600 hover:text-white hover:border-blue-600"
+                        className="border-blue-400 text-blue-400 hover:bg-blue-600 hover:text-white hover:border-blue-600 flex-1"
                       >
                         <Phone className="mr-2 h-4 w-4" />
                         {selectedShipment.driverPhone}
                       </Button>
                       <Button
                         variant="outline"
-                        className="border-blue-400 text-blue-400 hover:bg-blue-600 hover:text-white hover:border-blue-600"
+                        className="border-blue-400 text-blue-400 hover:bg-blue-600 hover:text-white hover:border-blue-600 flex-1"
                       >
                         <Mail className="mr-2 h-4 w-4" />
                         Contact Support
