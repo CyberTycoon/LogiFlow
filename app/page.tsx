@@ -129,17 +129,10 @@ export default function HomePage() {
                     size="lg"
                     className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-6 lg:px-8 py-3 lg:py-4 text-base lg:text-lg"
                   >
-                    Start Free Trial
+                    Start With Logiflow
                     <ArrowRight className="ml-2 h-4 w-4 lg:h-5 lg:w-5" />
                   </Button>
                 </Link>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="w-full sm:w-auto border-white/30 text-blue-400 hover:bg-white/10 hover:text-blue-400 px-6 lg:px-8 py-3 lg:py-4 text-base lg:text-lg"
-                >
-                  Watch Demo
-                </Button>
               </div>
 
               <div className="grid grid-cols-3 gap-4 lg:gap-6 pt-6 lg:pt-8">
@@ -189,7 +182,7 @@ export default function HomePage() {
                 title: "Shipment Tracking",
                 description: "Track your shipments with automated status updates and delivery confirmations.",
                 image:
-                  "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+                  "/tracking.jpg",
               },
               {
                 icon: MapPin,
@@ -224,7 +217,7 @@ export default function HomePage() {
                 title: "Lightning Fast",
                 description: "Optimized performance for instant data processing and updates.",
                 image:
-                  "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+                  "/fast.jpg",
               },
             ].map((feature, index) => (
               <Card
@@ -257,7 +250,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto space-y-6 lg:space-y-8">
             <h2 className="text-3xl lg:text-4xl font-bold text-white">Ready to Transform Your Logistics?</h2>
-            <p className="text-lg lg:text-xl text-white/70">
+            <p className="text-lg lg:text-xl text-white/70 mb-4">
               Join thousands of companies already using LogiFlow to streamline their operations.
             </p>
             <Link href="/dashboard">
