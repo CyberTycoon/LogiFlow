@@ -250,7 +250,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto space-y-6 lg:space-y-8">
             <h2 className="text-3xl lg:text-4xl font-bold text-white">Ready to Transform Your Logistics?</h2>
-            <p className="text-lg lg:text-xl text-white/70 mb-4">
+            <p className="text-lg lg:text-xl text-white/70 pb-4">
               Join thousands of companies already using LogiFlow to streamline their operations.
             </p>
             <Link href="/dashboard">
